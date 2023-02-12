@@ -41,6 +41,23 @@ if os.path.exists("raw_translated_1.mp3") == False or os.path.exists("_poor audi
             CreateTranslatedSrt(link=link)
             if os_name == "Windows":
                 winsound.PlaySound("notification.wav", winsound.SND_FILENAME)
+            else:
+                # Open the .wav file
+                wav_file = wave.open("notification.wav", "rb")
+                
+                # Create a PyAudio object
+                p = pyaudio.PyAudio()
+                
+                # Open a stream to play the .wav file
+                stream = p.open(format=p.get_format_from_width(wav_file.getsampwidth()),
+                                channels=wav_file.getnchannels(),
+                                rate=wav_file.getframerate(),
+                                output=True)
+                # Read the data from the .wav file and play it
+                data = wav_file.readframes(1024)
+                while data:
+                    stream.write(data)
+                    data = wav_file.readframes(1024)    
             sys.exit()
         else:
             translate_audio.translate_audio(Pass=Option,lang=None)
