@@ -1,1 +1,0 @@
-this folder is used as a place to save the final Audio Ouput or the result of audio translation program
