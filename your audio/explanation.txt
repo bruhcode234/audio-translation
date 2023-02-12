@@ -1,0 +1,1 @@
+put your audio file in this folder to get a translated audio file or to get the subtitle file using your audio
