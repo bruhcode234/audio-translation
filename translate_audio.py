@@ -27,7 +27,7 @@ def translate_audio(Pass,lang):
     speed_limit = float(speedConfig['SETTINGS']['speed_limit'])
     
     #get the output path for the Audio Result and the translated SrtFile
-    output_dir = os.path.abspath("Output Audio")
+    output_dir = os.path.abspath("Audio Output")
     srtFilepath = os.path.abspath("SrtFile")
 
     if lang == None:
@@ -70,7 +70,7 @@ def translate_audio(Pass,lang):
             decision = 'Y'
             break
         elif Continue == 'n' or Continue == 'N':
-            file_name = str(input("\nenter your output audio file name you want to create : "))
+            file_name = str(input("\nenter your audio output file name you want to create : "))
             decision = 'N'
             break
         elif Continue != 'Y' and Continue != 'y':
@@ -387,9 +387,9 @@ def fix_translated_audio():
 
     starting1 = time_module.time()
     
-    #define the audio result path which is 'Output Audio' folder 
+    #define the audio result path which is 'Audio Output' folder 
     #and 'SrtFile' folder for srtfile
-    output_dir = os.path.abspath("Output Audio")
+    output_dir = os.path.abspath("Audio Output")
     srtFilepath = os.path.abspath("SrtFile")
     speed_limit = float(speedConfig['SETTINGS']['speed_limit'])
     
