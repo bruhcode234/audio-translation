@@ -10,7 +10,6 @@ import speech_recognition as sr
 from subprocess import call
 import wave
 import numpy as np
-from io import *
 import sys
 translator = Translator()
 
@@ -39,8 +38,37 @@ def create_srt(file):
             break    
         elif language_source_code != language:
             if language == default_lang[-1]:                
-                print("unsupported language detected, cancel alignment process")
-                change_result = True                                                
+                print("unsupported language detected, translate the transcribe result to 'en'")
+                change_result = True                
+                #create srt file with original whisper transcribe to double check the text
+                print("Creating transcript text using speech recognition...")
+                r = sr.Recognizer()
+                #since speech recognizer can only transcribe wav audio file, we convert audio file extension to .wav first
+                if file[-4:] != '.wav':
+                    audio_suffix = file[-4:]
+                    changed_audio_file_name = file.replace(file[-4:],'.wav')
+                    if audio_suffix != ".wav":
+                        call(["ffmpeg","-i",f"{file}",f"{changed_audio_file_name}"])
+
+                with wave.open(changed_audio_file_name, "rb") as audio:
+                    framerate = audio.getframerate()
+                    n_frames = audio.getnframes()
+                    duration = n_frames / framerate
+                    audio_data = audio.readframes(n_frames)
+
+                segment_duration = 60  # in seconds
+                n_segments = int(np.ceil(duration / segment_duration))                
+
+                segments = np.array_split(np.frombuffer(audio_data, dtype=np.int16), n_segments)                
+                r = sr.Recognizer()
+                with open(output_dir + f"/{file_name}.txt",'w',encoding='utf-8') as txt:
+                    txt.write("The purpose of this file is to check is to check if the transcription is accurate\n")
+                    for segment in segments:
+                        audio = sr.AudioData(segment.tobytes(), framerate, sample_width=2)
+                        transcribed_text = r.recognize_google(audio, language=language_source_code)                        
+                        txt.write(transcribed_text)
+                #translating the result text 
+                result = translate_result(result=result) #we'll d                                             
 
     # align whisper output
     if change_result == False :        
