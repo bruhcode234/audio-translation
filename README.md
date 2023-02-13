@@ -3,7 +3,7 @@ This program allows you to translate the language of the speaker in an audio fil
 
 # How It Works
 1. the program takes an audio file and transcribe it using [WhisperX](https://github.com/m-bain/whisperX).
-2. translates the transcription text into the language you want. 
+2. translates the transcription text into the language you want using googletrans . 
 3. creates a bunch of text-to-speech audio files (they will be saved as raw_translated_x.mp3) using [gTTS](https://github.com/pndurette/gTTS) based on the transcription text
 4. creates a bunch of silent audio files using AudioSegment from [pydub](https://github.com/jiaaro/pydub) (they will be saved as silent_x.mp3) to insert pauses in case the speaker stops talking for a while.The silent audio duration is based on the difference between the start time of the current timestamp and the end time of the previous timestamp,
 5. then it changes the speed of raw_translated audio using sox to match the duration of the raw_translated audio with the duration in the transcription. The changed audio files will be saved as translated_x.mp3. 
