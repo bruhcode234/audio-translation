@@ -34,6 +34,6 @@ So, whisperX alignment only supports a few languages, so it is possible that the
 
 ---unimportant notes, i guess.---
 
-this repository is inspired by ThioJoe from his Auto-Synced-Translated-Dubs repository. i can't run the script in that repo cause i can't use Azure TTS, so i decided to make a similiar program on my own. i'm sorry if the code kinda messy i'm still a noob at programming and github, Also i'm sorry if there's grammar mistake on this text and if you don't understand what i wrote, it's my second language.
+this repository is inspired by ThioJoe from his Auto-Synced-Translated-Dubs repository. i can't run the script in that repo cause i can't use Azure TTS, so i decided to make a similiar program on my own. i'm sorry if the code kinda messy i'm still a noob at programming and github.
 
 for more details, here's a video on how to use this program.
