@@ -6,6 +6,7 @@ import sys
 import configparser
 import platform
 import winsound
+import pyaudio 
 
 linkConfig = configparser.ConfigParser()
 linkConfig.read('setting.ini')
@@ -17,12 +18,12 @@ if os.path.exists("raw_translated_1.mp3") == False or os.path.exists("_poor audi
     while True:        
         """ For option number 2, the program will take the srt file in the second line. 
                         option num 3 will take the first line"""
-        print("-"*20,"AUDIO TRANSLATION TOOL","-"*20)
-        print("1. Create srt file using the audio from youtube link in 'setting.ini'") 
-        print("2. Create new srt file in '_SrtFile Path.srt' in new language")
-        print("3. Create new translated audio file using the srt file in '_SrtFile Path.srt'")        
-        print("4. Just create srt file without translating or creating audio file using your audio file")
-        print("5. Create translated srt file using the audio from your audio folder")
+        print("-"*20,"AUDIO TRANSLATION PROGRAM","-"*20)
+        print("1. Create srt file using the audio from youtube link in 'setting.ini'")  #can create translated audio file
+        print("2. Create new srt file in '_SrtFile Path.srt' in new language") #can create translated audio file
+        print("3. Create new translated audio file using the srt file in '_SrtFile Path.srt'") #it creates tl audio file     
+        print("4. Just create srt file without translating or creating audio file using your audio file") #not create tl audio
+        print("5. Create translated srt file using the audio from your audio folder") #can create translated audio file
         Option = input("Your choice (1 2 3 4 or 5) : ")
         if Option != '1' and Option != '2' and Option != '3' and Option != '4' and Option != '5':
             print("Invalid Choice, Try Again")
@@ -40,7 +41,7 @@ if os.path.exists("raw_translated_1.mp3") == False or os.path.exists("_poor audi
         if decision_1 == 'n' or decision_1 == 'N':
             CreateTranslatedSrt(link=link)
             if os_name == "Windows":
-                winsound.PlaySound("notification.wav", winsound.SND_FILENAME)
+                winsound.PlaySound("notification.wav", winsound.SND_FILENAME)            
             else:
                 # Open the .wav file
                 wav_file = wave.open("notification.wav", "rb")
@@ -57,7 +58,7 @@ if os.path.exists("raw_translated_1.mp3") == False or os.path.exists("_poor audi
                 data = wav_file.readframes(1024)
                 while data:
                     stream.write(data)
-                    data = wav_file.readframes(1024)    
+                    data = wav_file.readframes(1024)
             sys.exit()
         else:
             translate_audio.translate_audio(Pass=Option,lang=None)
