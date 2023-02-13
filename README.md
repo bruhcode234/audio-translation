@@ -16,7 +16,7 @@ using pip :
 
 ```` pip -r install requirements.txt ````
 
-then you need to enter a youtube video link in setting.ini if you want to translate a youtube audio. but if you want to translate your own audio file, put it into the 'your audio' folder and configure the speed limit of an audio that is also in setting.ini, the speed limit is used to determine poor audio, if the speed of translated audio is higher than the speed limit it'll be considered as a poor audio. The default speed limit is 1.8
+then you need to enter a youtube video link in setting.ini if you want to translate a youtube audio. but if you want to translate your own audio file, put it into 'your audio' folder and configure the speed limit which is also in the setting, the speed limit is used to determine poor audio, if the speed of translated audio is higher than the speed limit it'll be considered as a poor audio. The default speed limit is 1.8
 
 # How To Use
 simply run audio_translation.py on your IDE or cmd (i recommend you to run it on IDE). Once you run the script you will then be presented with several options along with some sub-options. These sub-options will ask you whether 
