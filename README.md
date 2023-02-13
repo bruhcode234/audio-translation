@@ -10,7 +10,7 @@ This program allows you to translate the language of the speaker in an audio fil
 6. Finally after creating all of silent audio files and translated audio files, it will merge all of them into a single audio file which is the result of this program. and export it to Audio Output folder
 7. Remove the raw_translated, translated, and silent audio files.
 # Setup And Configuration
-before you run this program, you have to install [SoX](https://sourceforge.net/projects/sox/) and install these [two files](https://app.box.com/s/tzn5ohyh90viedu3u90w2l2pmp2bl41t) and put it into SoX folder you installed so you won't get any error when running sox. next, you have to add the path of the sox folder you installed to the path in system variables from environment variables. after you've done all of that, you need install the requirements.
+before you run this program, you have to install [SoX](https://sourceforge.net/projects/sox/) and install these [two files](https://app.box.com/s/tzn5ohyh90viedu3u90w2l2pmp2bl41t) and put it into SoX folder you installed so you won't get any error when running sox. next, you have to add the path of the sox folder you installed to the path in system variables from environment variables. after you've done all of that, you need to install the requirements.
 
 using pip :
 
