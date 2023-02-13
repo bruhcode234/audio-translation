@@ -11,7 +11,8 @@ from Create_Translated_SrtFile import CreateTranslatedSrt
 import configparser
 import platform
 import winsound
-from playsound import playsound
+import pyaudio
+import wave
 
 #---------------------------------------------------------------------------------------------------------------------------
 def translate_audio(Pass,lang):
@@ -70,7 +71,7 @@ def translate_audio(Pass,lang):
             decision = 'Y'
             break
         elif Continue == 'n' or Continue == 'N':
-            file_name = str(input("\nenter your audio output file name you want to create : "))
+            file_name = str(input("\nenter your Audio Output file name you want to create : "))
             decision = 'N'
             break
         elif Continue != 'Y' and Continue != 'y':
@@ -108,18 +109,18 @@ def translate_audio(Pass,lang):
         if i == start:
             print("Creating Required Audio Files")
 
-            #Create Silence_1.mp3 if you haven't created any audio
+            #Create Silent_1.mp3 if you haven't created any audio
             if i == 0:
-                #Determine the first start_time to create Silence_0 file 
+                #Determine the first start_time to create Silent_0 file 
                 time_complete = lines[time_stamp]
                 time = time_complete.split('-->')
                 start_time = time[0].split(':')
                 start_time = start_time[2]
                 start_time = float(re.sub(r'.', '', start_time, count = 1).replace(',','.'))
 
-                #create the first silence audio or silence_1.mp3 to add a pause before the first text is spoken
-                silence = AudioSegment.silent(duration=start_time*1000, frame_rate=44100)
-                silence.export("Silence_1.mp3", format="mp3")
+                #create the first silent audio or Silent_1.mp3 to add a pause before the first text is spoken
+                silent = AudioSegment.silent(duration=start_time*1000, frame_rate=44100)
+                silent.export("Silent_1.mp3", format="mp3")
 
             #in case you get an error and fail to run this program completely, you can choose where you want to start
             #if you choose 2 then the raw_translated creation process starts from 2 
@@ -131,7 +132,7 @@ def translate_audio(Pass,lang):
         voice = gTTS(translated_text, slow=False, lang_check = True, lang=lang_target)        
         voice.save(f'raw_translated_{i+1}.mp3')                    
         
-        #trim raw_translated audio to trim the silence in the last second of raw_translated_audio
+        #trim raw_translated audio to trim the silent in the last second of raw_translated_audio
         audio = AudioSegment.from_file(f'raw_translated_{i+1}.mp3')
         sus_sentence = lines[text]        
         
@@ -232,7 +233,7 @@ def translate_audio(Pass,lang):
             Speed_factor_list.append(speed_factor)
             textX.append(lines[text-4])             
 
-        #Create the silence audio from 2 to end, the timestamp must be more than 4 due to Index Error if time stamp < 4
+        #Create the silent audio from 2 to end, the timestamp must be more than 4 due to Index Error if time stamp < 4
         if time_stamp > 4:
             #get the end time of the timestamp before 
             time_complete_prior = lines[time_stamp-4]
@@ -248,16 +249,16 @@ def translate_audio(Pass,lang):
             end_time_prior = float(end_time_prior.replace(',','.').replace('\n',''))
             end_time_prior = end_time_prior + (end_time_prior_minutes * 60)
 
-            #get the desired duration silence. des_dur_sil = start time in time stamp now - end time in time stamp before
-            desired_duration_silence = (start_time - end_time_prior) - float(audio_diff)
+            #get the desired duration silent. des_dur_sil = start time in time stamp now - end time in time stamp before
+            desired_duration_silent = (start_time - end_time_prior) - float(audio_diff)
             
-            #can't export the silence audio if the duration is lower than 0.0001
-            if desired_duration_silence == 0 or desired_duration_silence < 0.0001:
-                desired_duration_silence = 0.0001
+            #can't export the silent audio if the duration is lower than 0.0001
+            if desired_duration_silent == 0 or desired_duration_silent < 0.0001:
+                desired_duration_silent = 0.0001
 
-            #Create the silence audio 
-            silence = AudioSegment.silent(duration=(desired_duration_silence)*1000, frame_rate=44100)
-            silence.export(f"Silence_{i+1}.mp3")
+            #Create the silent audio 
+            silent = AudioSegment.silent(duration=(desired_duration_silent)*1000, frame_rate=44100)
+            silent.export(f"Silent_{i+1}.mp3")
 
             # merging all the exported audio file into one file at the final iteration
             if i == Range-1:       
@@ -294,42 +295,42 @@ def translate_audio(Pass,lang):
                         decision ='n'
                     
                 if decision == 'n' or decision == 'N':
-                    #Merging Silence and Translated audio
+                    #Merging silent and Translated audio
                     print("\nMerging Audio into one file")
                     for i in range(Range):
                         #get the audio using AudioSegment
                         translated_duration = AudioSegment.from_file(f"translated_{i+1}.mp3",format="mp3")
                         translated_duration = translated_duration.duration_seconds
-                        silence_duration = AudioSegment.from_file(f"Silence_{i+1}.mp3",format="mp3")
-                        silence_duration = silence_duration.duration_seconds
+                        Silent_duration = AudioSegment.from_file(f"Silent_{i+1}.mp3",format="mp3")
+                        Silent_duration = Silent_duration.duration_seconds
                         if i == 0:
                             print(f"{int((i/Range)*100)}% complete")
                         if i > 0:
                             if i < 2:
                                 #merging audio, starts from translated 1
-                                silence_audio = AudioSegment.from_file(f"Silence_{i+1}.mp3",format="mp3")
+                                Silent_audio = AudioSegment.from_file(f"Silent_{i+1}.mp3",format="mp3")
                                 audio1 = AudioSegment.from_file(f"translated_{i}.mp3", format="mp3")
                                 audio2 = AudioSegment.from_file(f"translated_{i+1}.mp3", format="mp3")
-                                audio1 = audio1 + silence_audio + audio2
+                                audio1 = audio1 + Silent_audio + audio2
                                 print(f"{int((i/Range)*100)}% complete")
                             else:
-                                silence_audio = AudioSegment.from_file(f"Silence_{i+1}.mp3",format="mp3")
+                                Silent_audio = AudioSegment.from_file(f"Silent_{i+1}.mp3",format="mp3")
                                 audio2 = AudioSegment.from_file(f"translated_{i+1}.mp3", format="mp3")
-                                temp = audio1 + silence_audio
+                                temp = audio1 + Silent_audio
                                 audio1 = temp + audio2
                                 print(f"{int((i/Range)*100)}% complete")                    
 
                         if i == Range-1:             
-                            #merging the silence_1.mp3 to the merged audio from the process before   
-                            silence_audio = AudioSegment.from_file(f"Silence_1.mp3",format="mp3")
-                            audio1 = silence_audio + audio1
+                            #merging the Silent_1.mp3 to the merged audio from the process before   
+                            Silent_audio = AudioSegment.from_file(f"Silent_1.mp3",format="mp3")
+                            audio1 = Silent_audio + audio1
                             audio1.export(os.path.join(output_dir,file_name + f'-{lang_target}.mp3'), format="mp3")
                             print(f"100% complete \n")
                             print("Merging Audio complete")                            
                             for i in range(Range):
                                 if i == 0:
                                     print("Removing Unnecessary files")
-                                os.remove(f"Silence_{i+1}.mp3")
+                                os.remove(f"Silent_{i+1}.mp3")
                                 os.remove(f"raw_translated_{i+1}.mp3")
                                 os.remove(f"translated_{i+1}.mp3")
                                 if i == Range-1:
@@ -339,8 +340,23 @@ def translate_audio(Pass,lang):
                                     print("Total time for this program to run : ",str(timedelta(seconds=total_time)),"\n")
                                     if os_name == "Windows":
                                         winsound.PlaySound("notification.wav", winsound.SND_FILENAME)
-                                    if os_name == "Linux":
-                                        playsound("notification.wav")
+                                    else:
+                                        # Open the .wav file
+                                        wav_file = wave.open("notification.wav", "rb")
+                                        
+                                        # Create a PyAudio object
+                                        p = pyaudio.PyAudio()
+                                        
+                                        # Open a stream to play the .wav file
+                                        stream = p.open(format=p.get_format_from_width(wav_file.getsampwidth()),
+                                                        channels=wav_file.getnchannels(),
+                                                        rate=wav_file.getframerate(),
+                                                        output=True)
+                                        # Read the data from the .wav file and play it
+                                        data = wav_file.readframes(1024)
+                                        while data:
+                                            stream.write(data)
+                                            data = wav_file.readframes(1024)
                                     sys.exit()
                 else:
                     #Cancel merging audio process if you choose 'N' on ASK 3 (line 79)
@@ -354,15 +370,47 @@ def translate_audio(Pass,lang):
                         print("Total time for this program to run : ",str(timedelta(seconds=total_time)),"\n")
                         if os_name == "Windows":
                             winsound.PlaySound("notification.wav", winsound.SND_FILENAME)
-                        if os_name == "Linux":
-                            playsound("notification.wav")
+                        else:
+                            # Open the .wav file
+                            wav_file = wave.open("notification.wav", "rb")
+                            #
+                            # Create a PyAudio object
+                            p = pyaudio.PyAudio()
+                            #
+                            # Open a stream to play the .wav file
+                            stream = p.open(format=p.get_format_from_width(wav_file.getsampwidth()),
+                                            channels=wav_file.getnchannels(),
+                                            rate=wav_file.getframerate(),
+                                            output=True)
+                            # Read the data from the .wav file and play it
+                            data = wav_file.readframes(1024)
+                            while data:
+                                stream.write(data)
+                                data = wav_file.readframes(1024)
+
                         sys.exit()
                     if skip == 'y' or skip == 'Y':
                         print("Total time for this program to run : ",str(timedelta(seconds=total_time)),"\n")
                         if os_name == "Windows":
                             winsound.PlaySound("notification.wav", winsound.SND_FILENAME)
-                        if os_name == "Linux":
-                            playsound("notification.wav")
+                        else:
+                            # Open the .wav file
+                            wav_file = wave.open("notification.wav", "rb")
+                            
+                            # Create a PyAudio object
+                            p = pyaudio.PyAudio()
+                            
+                            # Open a stream to play the .wav file
+                            stream = p.open(format=p.get_format_from_width(wav_file.getsampwidth()),
+                                            channels=wav_file.getnchannels(),
+                                            rate=wav_file.getframerate(),
+                                            output=True)
+                            # Read the data from the .wav file and play it
+                            data = wav_file.readframes(1024)
+                            while data:
+                                stream.write(data)
+                                data = wav_file.readframes(1024)
+
                         sys.exit()
 
         print(f"{int(i/(Range-1)*100)} % ")
@@ -432,7 +480,7 @@ def fix_translated_audio():
         #desired duration text = #II - #I
         #-----------------------------------------------------------------------------------------------------
         
-        #this code is to get desired duration silence_x
+        #this code is to get desired duration Silent_x
         #-----------------------------------------------------------------------------------------------------                        
         time_complete = lines[((int(item) * 4) - 7)]
         time = time_complete.split(' --> ')        
@@ -451,10 +499,10 @@ def fix_translated_audio():
         previous_end_time_min = float(previous_end_time[1].replace(',','.'))
 
         previous_end_time = previous_end_time_sec + (previous_end_time_min * 60) #III                
-        #desired duration silence x = #I - #III
+        #desired duration silent x = #I - #III
         #-----------------------------------------------------------------------------------------------------
 
-        #this code is to get desired duration silence_x+1
+        #this code is to get desired duration Silent_x+1
         #-----------------------------------------------------------------------------------------------------
         try:
             time_complete = lines[((int(item) * 4) + 1)]
@@ -476,7 +524,7 @@ def fix_translated_audio():
             print("Last Text Detected")
             pass
 
-        #desired duration silence x+1 = #IV - #II
+        #desired duration silent x+1 = #IV - #II
         #next desired duration text = #V - #IV
         #-----------------------------------------------------------------------------------------------------
 
@@ -543,8 +591,8 @@ def fix_translated_audio():
 
         #get the speed to change the duration
         speed_factor = audio_duration/desired_duration_text
-        
-        bad_translated_audio.append(int(item))
+        if speed_factor > speed_limit:
+            bad_translated_audio.append(int(item))
         speed_list.append(speed_factor)
         poor_audio_list.append(int(item))
                 
@@ -564,29 +612,29 @@ def fix_translated_audio():
             next_audio_diff = next_translated_duration - next_desired_duration_text
         #-----------------------------------------------------------------------------------------------------
 
-        #get desired silence duration and create silence audio
+        #get desired silent duration and create silent audio
         #-----------------------------------------------------------------------------------------------------
         if negatif_index == True:            
-            previous_desired_duration_silence = previous_start_time            
+            previous_desired_duration_silent = previous_start_time            
         else:
-            previous_desired_duration_silence = current_start_time - previous_end_time - audio_diff    
+            previous_desired_duration_silent = current_start_time - previous_end_time - audio_diff    
 
-        if previous_desired_duration_silence == 0 or previous_desired_duration_silence < 0.0001:
-            previous_desired_duration_silence = 0.0001
+        if previous_desired_duration_silent == 0 or previous_desired_duration_silent < 0.0001:
+            previous_desired_duration_silent = 0.0001
 
-        print(f"Creating new Silence_{int(item)}.mp3")
-        silence = AudioSegment.silent(duration=(previous_desired_duration_silence)*1000, frame_rate=44100)
-        silence.export(f"Silence_{int(item)}.mp3")
+        print(f"Creating new Silent_{int(item)}.mp3")
+        silent = AudioSegment.silent(duration=(previous_desired_duration_silent)*1000, frame_rate=44100)
+        silent.export(f"Silent_{int(item)}.mp3")
         time_module.sleep(0.3)    
 
         if Index_Error != True:
-            next_desired_duration_silence = next_start_time - current_end_time - next_audio_diff
-            if next_desired_duration_silence == 0 or next_desired_duration_silence < 0.0001:
-                next_desired_duration_silence = 0.0001
+            next_desired_duration_silent = next_start_time - current_end_time - next_audio_diff
+            if next_desired_duration_silent == 0 or next_desired_duration_silent < 0.0001:
+                next_desired_duration_silent = 0.0001
 
-            print(f"Creating new Silence_{int(item)+1}.mp3")
-            silence = AudioSegment.silent(duration=(next_desired_duration_silence)*1000, frame_rate=44100)
-            silence.export(f"Silence_{int(item)+1}.mp3")                
+            print(f"Creating new Silent_{int(item)+1}.mp3")
+            silent = AudioSegment.silent(duration=(next_desired_duration_silent)*1000, frame_rate=44100)
+            silent.export(f"Silent_{int(item)+1}.mp3")                
         #-------------------------------------------------------------------------------------------------------
         
         if item == items[-1]:            
@@ -603,8 +651,24 @@ def fix_translated_audio():
             while True:
                 if os_name == "Windows":
                     winsound.PlaySound("notification.wav", winsound.SND_FILENAME)
-                elif os_name == "Linux":
-                    playsound("notification.wav")
+                else:
+                    # Open the .wav file
+                    wav_file = wave.open("notification.wav", "rb")
+                    #
+                    # Create a PyAudio object
+                    p = pyaudio.PyAudio()
+                    #
+                    # Open a stream to play the .wav file
+                    stream = p.open(format=p.get_format_from_width(wav_file.getsampwidth()),
+                                    channels=wav_file.getnchannels(),
+                                    rate=wav_file.getframerate(),
+                                    output=True)
+                    # Read the data from the .wav file and play it
+                    data = wav_file.readframes(1024)
+                    while data:
+                        stream.write(data)
+                        data = wav_file.readframes(1024)
+
                 satisfy = input("Are you satisfied with the changes(Y) or No (N) : ")
                 if satisfy == 'n' or satisfy == 'N':
                     sys.exit()
@@ -619,34 +683,34 @@ def fix_translated_audio():
     for i in range(Range):
         translated_duration = AudioSegment.from_file(f"translated_{i+1}.mp3",format="mp3")
         translated_duration = translated_duration.duration_seconds
-        silence_duration = AudioSegment.from_file(f"Silence_{i+1}.mp3",format="mp3")
-        silence_duration = silence_duration.duration_seconds
+        Silent_duration = AudioSegment.from_file(f"Silent_{i+1}.mp3",format="mp3")
+        Silent_duration = Silent_duration.duration_seconds
         if i == 0:
             print(f"{int((i/Range)*100)}% complete")
         if i > 0:
             if i < 2:
-                silence_audio = AudioSegment.from_file(f"Silence_{i+1}.mp3",format="mp3")
+                Silent_audio = AudioSegment.from_file(f"Silent_{i+1}.mp3",format="mp3")
                 audio1 = AudioSegment.from_file(f"translated_{i}.mp3", format="mp3")
                 audio2 = AudioSegment.from_file(f"translated_{i+1}.mp3", format="mp3")
-                audio1 = audio1 + silence_audio + audio2
+                audio1 = audio1 + Silent_audio + audio2
                 print(f"{int((i/Range)*100)}% complete")
             else:
-                silence_audio = AudioSegment.from_file(f"Silence_{i+1}.mp3",format="mp3")
+                Silent_audio = AudioSegment.from_file(f"Silent_{i+1}.mp3",format="mp3")
                 audio2 = AudioSegment.from_file(f"translated_{i+1}.mp3", format="mp3")
-                temp = audio1 + silence_audio
+                temp = audio1 + Silent_audio
                 audio1 = temp + audio2
                 print(f"{int((i/Range)*100)}% complete")    
                                 
         if i == Range-1:
-            silence_audio = AudioSegment.from_file(f"Silence_1.mp3",format="mp3")
-            audio1 = silence_audio + audio1
+            Silent_audio = AudioSegment.from_file(f"Silent_1.mp3",format="mp3")
+            audio1 = Silent_audio + audio1
             audio1.export(os.path.join(output_dir,file_name + f'-{lang_target}.mp3'), format="mp3")
             print(f"100% complete \n")
             print("Merging complete")
             for i in range(Range):
                 if i == 0:
                     print("Removing Unnecessary files")
-                os.remove(f"Silence_{i+1}.mp3")
+                os.remove(f"Silent_{i+1}.mp3")
                 os.remove(f"raw_translated_{i+1}.mp3")
                 os.remove(f"translated_{i+1}.mp3")
                 if i == Range-1:
@@ -658,8 +722,23 @@ def fix_translated_audio():
                     print("Total time : ", str(timedelta(seconds=total_time1)))
                     if os_name == "Windows":
                             winsound.PlaySound("notification.wav", winsound.SND_FILENAME)
-                    elif os_name == "Linux":
-                        playsound("notification.wav")
+                    else:
+                        # Open the .wav file
+                        wav_file = wave.open("notification.wav", "rb")
+                        #
+                        # Create a PyAudio object
+                        p = pyaudio.PyAudio()
+                        #
+                        # Open a stream to play the .wav file
+                        stream = p.open(format=p.get_format_from_width(wav_file.getsampwidth()),
+                                        channels=wav_file.getnchannels(),
+                                        rate=wav_file.getframerate(),
+                                        output=True)
+                        # Read the data from the .wav file and play it
+                        data = wav_file.readframes(1024)
+                        while data:
+                            stream.write(data)
+                            data = wav_file.readframes(1024)
                     sys.exit()
 #----------------------------------------------------------------------------------------------------------------------------
 
