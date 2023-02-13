@@ -6,7 +6,7 @@ This program allows you to translate the language of the speaker in an audio fil
 2. translates the transcription text into the language you want using googletrans . 
 3. creates a bunch of text-to-speech audio files (they will be saved as raw_translated_x.mp3) using [gTTS](https://github.com/pndurette/gTTS) based on the transcription text
 4. creates a bunch of silent audio files using AudioSegment from [pydub](https://github.com/jiaaro/pydub) (they will be saved as silent_x.mp3) to insert pauses in case the speaker stops talking for a while.The silent audio duration is based on the difference between the start time of the current timestamp and the end time of the previous timestamp,
-5. then it changes the speed of raw_translated audio using sox to match the duration of the raw_translated audio with the duration in the transcription. The changed audio files will be saved as translated_x.mp3. 
+5. then change the speed of raw_translated audio using sox to match the duration of the raw_translated audio with the duration in the transcription. The changed audio files will be saved as translated_x.mp3. 
 6. Finally after creating all of silent audio files and translated audio files, it will merge all of them into a single audio file which is the result of this program. and export it to Audio Output folder
 7. Remove the raw_translated, translated, and silent audio files.
 # Setup And Configuration
